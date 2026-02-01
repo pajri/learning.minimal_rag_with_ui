@@ -95,7 +95,7 @@ Once running, the API will be available at:
 
 **Sample request** (`requests_ingest.json`):
 
-```
+```json
 {
   "documents": [
     "A cat can run at a top speed of approximately 31 mph.",
@@ -106,7 +106,7 @@ Once running, the API will be available at:
 
 **Response:**
 
-```
+```json
 {
   "status": "ok",
   "num_documents": 2
@@ -125,7 +125,7 @@ Once running, the API will be available at:
 
 **Sample request** (`request_ask.json`):
 
-```
+```json
 {
   "question": "How fast can a cat run?",
   "k": 3
@@ -134,7 +134,7 @@ Once running, the API will be available at:
 
 **Sample response:**
 
-```
+```json
 {
   "question": "How fast can a cat run?",
   "results": "A cat can travel at a top speed of approximately 31 mph."
@@ -143,7 +143,7 @@ Once running, the API will be available at:
 
 If no retrieved documents pass the relevance filter:
 
-```
+```json
 {
   "results": "I do not know the answer based the context you provided."
 }
