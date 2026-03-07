@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.schemas import IngestRequest, AskRequest
 from .rag.pipeline import rag_pipeline
 from .ingestion.pipeline import ingestion_pipeline
+from .dependencies import get_collection
 
 router = APIRouter()
 
@@ -14,16 +15,16 @@ def set_collection(col):
 
 
 @router.post("/ingest")
-def ingest(req: IngestRequest):
-    docs = ingestion_pipeline(req.documents)
+def ingest(req: IngestRequest, collection=Depends(get_collection)):
+    docs = ingestion_pipeline(req.documents, collection)
 
     return {"status": "ok", "num_documents": len(docs)}
 
 
 @router.post("/ask")
-def ask(req: AskRequest):
+def ask(req: AskRequest, collection = Depends(get_collection)):
     question = req.question
-    answer = rag_pipeline(question)
+    answer = rag_pipeline(question, collection)
     if answer is None:
         return {
             "question": req.question,
