@@ -1,16 +1,16 @@
 from app.config import DISTANCE_THRESHOLD
 
-def filter(documents, distances):
+def filter(documents):
     approved_chunks = []
     retrieval_log = []
 
-    for doc, dist in zip(documents, distances):
+    for doc in documents:
         retrieval_log.append({
-            "document": doc,
-            "distance": dist
+            "document": doc.id,
+            "distance": doc.distance
         })
 
-        if dist <= DISTANCE_THRESHOLD:
+        if doc.distance <= DISTANCE_THRESHOLD:
             approved_chunks.append(doc)
 
     return approved_chunks, retrieval_log, len(approved_chunks) > 0

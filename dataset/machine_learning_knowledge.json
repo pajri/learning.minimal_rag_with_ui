@@ -1,0 +1,82 @@
+[
+  {
+    "id": "doc1",
+    "text": "Machine learning is a field of artificial intelligence that focuses on enabling computers to learn patterns from data without being explicitly programmed. Algorithms analyze historical data and use it to make predictions or decisions. It is widely used in applications such as recommendation systems, fraud detection, and image recognition. The performance of a machine learning model typically improves as it is exposed to more high-quality data."
+  },
+  {
+    "id": "doc2",
+    "text": "Supervised learning is a type of machine learning where models are trained using labeled data. Each training example contains both input features and the correct output. The algorithm learns a mapping from inputs to outputs so it can make predictions on new data. Common supervised tasks include classification and regression."
+  },
+  {
+    "id": "doc3",
+    "text": "Unsupervised learning involves training models on data that does not contain labels. The goal is to discover hidden patterns or structures within the dataset. Techniques such as clustering and dimensionality reduction are commonly used. These methods are helpful for exploratory data analysis and feature discovery."
+  },
+  {
+    "id": "doc4",
+    "text": "A dataset in machine learning is typically divided into training, validation, and test sets. The training set is used to teach the model patterns in the data. The validation set helps tune hyperparameters and prevent overfitting. The test set evaluates how well the trained model generalizes to unseen data."
+  },
+  {
+    "id": "doc5",
+    "text": "Overfitting occurs when a machine learning model learns the training data too well, including its noise and irrelevant details. As a result, the model performs poorly on new, unseen data. Techniques such as regularization, dropout, and cross-validation help reduce overfitting. A good model balances learning patterns while maintaining generalization."
+  },
+  {
+    "id": "doc6",
+    "text": "Underfitting happens when a model is too simple to capture the underlying structure of the data. In this case, the model performs poorly on both training and test datasets. Increasing model complexity or adding better features may help solve this problem. Proper model selection is important to avoid underfitting."
+  },
+  {
+    "id": "doc7",
+    "text": "Feature engineering is the process of selecting, transforming, or creating variables that improve model performance. Good features can significantly increase the accuracy of machine learning models. Examples include scaling numerical values, encoding categorical variables, and generating interaction features. Feature engineering often requires domain knowledge."
+  },
+  {
+    "id": "doc8",
+    "text": "Regression is a supervised learning task where the goal is to predict a continuous numerical value. Examples include predicting house prices or forecasting sales. Algorithms such as linear regression, decision trees, and neural networks can perform regression tasks. Evaluation metrics often include mean squared error and mean absolute error."
+  },
+  {
+    "id": "doc9",
+    "text": "Classification is a machine learning task where the goal is to assign inputs into predefined categories. For example, an email classifier may determine whether a message is spam or not spam. Popular algorithms include logistic regression, support vector machines, and random forests. Accuracy, precision, recall, and F1-score are common evaluation metrics."
+  },
+  {
+    "id": "doc10",
+    "text": "Clustering is an unsupervised learning technique used to group similar data points together. Unlike classification, clustering does not rely on labeled data. Algorithms such as k-means and hierarchical clustering are commonly used. Clustering is often applied in customer segmentation and anomaly detection."
+  },
+  {
+    "id": "doc11",
+    "text": "Neural networks are machine learning models inspired by the structure of the human brain. They consist of layers of interconnected nodes called neurons. Each neuron processes input data and passes the result to the next layer. Neural networks are widely used in deep learning applications such as image and speech recognition."
+  },
+  {
+    "id": "doc12",
+    "text": "Deep learning is a subset of machine learning that uses neural networks with many layers. These deep models can automatically learn complex representations from raw data. Deep learning has achieved major breakthroughs in computer vision, natural language processing, and speech recognition. However, it often requires large datasets and powerful hardware."
+  },
+  {
+    "id": "doc13",
+    "text": "Gradient descent is an optimization algorithm used to train many machine learning models. It works by iteratively adjusting model parameters to minimize a loss function. The algorithm moves in the direction of the steepest decrease in error. Variants such as stochastic gradient descent and Adam improve training efficiency."
+  },
+  {
+    "id": "doc14",
+    "text": "A loss function measures how well a machine learning model performs on a given dataset. It calculates the difference between the predicted values and the actual values. During training, the model tries to minimize this loss. Choosing an appropriate loss function is important for effective learning."
+  },
+  {
+    "id": "doc15",
+    "text": "Regularization is a technique used to prevent machine learning models from overfitting. It adds a penalty term to the loss function that discourages overly complex models. Common regularization methods include L1 and L2 regularization. These techniques help improve the model's ability to generalize."
+  },
+  {
+    "id": "doc16",
+    "text": "Cross-validation is a method used to evaluate machine learning models more reliably. The dataset is divided into multiple folds, and the model is trained and tested several times. Each fold serves as a test set once while the others are used for training. This approach provides a more robust estimate of model performance."
+  },
+  {
+    "id": "doc17",
+    "text": "Hyperparameters are configuration settings that control how a machine learning algorithm learns. Unlike model parameters, they are not learned from the data during training. Examples include learning rate, number of layers, and batch size. Proper hyperparameter tuning can significantly improve model performance."
+  },
+  {
+    "id": "doc18",
+    "text": "Natural language processing (NLP) is a field of machine learning focused on understanding and generating human language. NLP techniques are used in applications such as chatbots, translation systems, and sentiment analysis. Modern NLP systems often rely on deep learning models. Large language models are a recent advancement in this area."
+  },
+  {
+    "id": "doc19",
+    "text": "Reinforcement learning is a type of machine learning where an agent learns by interacting with an environment. The agent receives rewards or penalties based on its actions. Over time, it learns a strategy that maximizes cumulative rewards. Reinforcement learning is commonly used in robotics and game playing."
+  },
+  {
+    "id": "doc20",
+    "text": "Model evaluation is the process of measuring how well a machine learning model performs on unseen data. Different tasks use different evaluation metrics. For example, classification may use accuracy or F1-score, while regression often uses mean squared error. Proper evaluation ensures the model will perform reliably in real-world scenarios."
+  }
+]

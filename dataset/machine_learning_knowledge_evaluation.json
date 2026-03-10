@@ -1,0 +1,137 @@
+[
+  {
+    "question": "What is machine learning and what is its main goal?",
+    "answer": "Machine learning is a field of artificial intelligence that enables computers to learn patterns from data and make predictions or decisions without explicit programming.",
+    "relevant_doc_ids": ["doc1"]
+  },
+  {
+    "question": "Give two examples of applications where machine learning is commonly used.",
+    "answer": "Machine learning is commonly used in applications such as recommendation systems, fraud detection, and image recognition.",
+    "relevant_doc_ids": ["doc1"]
+  },
+  {
+    "question": "What type of machine learning uses labeled data for training?",
+    "answer": "Supervised learning uses labeled data where each training example includes input features and the correct output.",
+    "relevant_doc_ids": ["doc2"]
+  },
+  {
+    "question": "What are two common tasks in supervised learning?",
+    "answer": "Two common supervised learning tasks are classification and regression.",
+    "relevant_doc_ids": ["doc2", "doc8", "doc9"]
+  },
+  {
+    "question": "What is the main goal of unsupervised learning?",
+    "answer": "The goal of unsupervised learning is to discover hidden patterns or structures in unlabeled data.",
+    "relevant_doc_ids": ["doc3"]
+  },
+  {
+    "question": "Name two techniques commonly used in unsupervised learning.",
+    "answer": "Clustering and dimensionality reduction are common unsupervised learning techniques.",
+    "relevant_doc_ids": ["doc3", "doc10"]
+  },
+  {
+    "question": "What are the three common dataset splits used in machine learning?",
+    "answer": "Datasets are typically divided into training, validation, and test sets.",
+    "relevant_doc_ids": ["doc4"]
+  },
+  {
+    "question": "What is the purpose of the validation set in machine learning?",
+    "answer": "The validation set is used to tune hyperparameters and help prevent overfitting.",
+    "relevant_doc_ids": ["doc4", "doc17"]
+  },
+  {
+    "question": "What is overfitting in machine learning?",
+    "answer": "Overfitting occurs when a model learns the training data too well, including noise and irrelevant details, causing poor performance on new data.",
+    "relevant_doc_ids": ["doc5"]
+  },
+  {
+    "question": "Name two techniques that can help reduce overfitting.",
+    "answer": "Regularization, dropout, and cross-validation are techniques used to reduce overfitting.",
+    "relevant_doc_ids": ["doc5", "doc15", "doc16"]
+  },
+  {
+    "question": "What is underfitting and why does it occur?",
+    "answer": "Underfitting occurs when a model is too simple to capture the underlying structure of the data, leading to poor performance on both training and test data.",
+    "relevant_doc_ids": ["doc6"]
+  },
+  {
+    "question": "What is feature engineering?",
+    "answer": "Feature engineering is the process of selecting, transforming, or creating variables that improve machine learning model performance.",
+    "relevant_doc_ids": ["doc7"]
+  },
+  {
+    "question": "What is the goal of regression in machine learning?",
+    "answer": "Regression aims to predict a continuous numerical value such as house prices or sales forecasts.",
+    "relevant_doc_ids": ["doc8"]
+  },
+  {
+    "question": "Name two evaluation metrics used in regression tasks.",
+    "answer": "Mean squared error and mean absolute error are common regression evaluation metrics.",
+    "relevant_doc_ids": ["doc8", "doc20"]
+  },
+  {
+    "question": "What is classification in machine learning?",
+    "answer": "Classification is the task of assigning inputs into predefined categories, such as determining whether an email is spam or not.",
+    "relevant_doc_ids": ["doc9"]
+  },
+  {
+    "question": "Name two evaluation metrics used for classification tasks.",
+    "answer": "Accuracy, precision, recall, and F1-score are common classification evaluation metrics.",
+    "relevant_doc_ids": ["doc9", "doc20"]
+  },
+  {
+    "question": "What is clustering and how does it differ from classification?",
+    "answer": "Clustering groups similar data points without labeled data, while classification assigns data to predefined categories using labeled data.",
+    "relevant_doc_ids": ["doc9", "doc10"]
+  },
+  {
+    "question": "What are neural networks inspired by?",
+    "answer": "Neural networks are inspired by the structure of the human brain and consist of layers of interconnected neurons.",
+    "relevant_doc_ids": ["doc11"]
+  },
+  {
+    "question": "What is deep learning?",
+    "answer": "Deep learning is a subset of machine learning that uses neural networks with many layers to learn complex representations from data.",
+    "relevant_doc_ids": ["doc12", "doc11"]
+  },
+  {
+    "question": "What is gradient descent used for in machine learning?",
+    "answer": "Gradient descent is an optimization algorithm used to minimize the loss function by iteratively adjusting model parameters.",
+    "relevant_doc_ids": ["doc13", "doc14"]
+  },
+  {
+    "question": "What is a loss function?",
+    "answer": "A loss function measures the difference between predicted values and actual values to evaluate model performance during training.",
+    "relevant_doc_ids": ["doc14"]
+  },
+  {
+    "question": "What is regularization and why is it used?",
+    "answer": "Regularization adds a penalty to the loss function to discourage overly complex models and reduce overfitting.",
+    "relevant_doc_ids": ["doc15", "doc5"]
+  },
+  {
+    "question": "What is cross-validation?",
+    "answer": "Cross-validation is a method where the dataset is divided into multiple folds to train and evaluate a model several times for a more reliable performance estimate.",
+    "relevant_doc_ids": ["doc16"]
+  },
+  {
+    "question": "What are hyperparameters in machine learning?",
+    "answer": "Hyperparameters are configuration settings such as learning rate or batch size that control how a model learns but are not learned from the data.",
+    "relevant_doc_ids": ["doc17"]
+  },
+  {
+    "question": "What is natural language processing used for?",
+    "answer": "Natural language processing is used to understand and generate human language in applications such as chatbots, translation systems, and sentiment analysis.",
+    "relevant_doc_ids": ["doc18"]
+  },
+  {
+    "question": "What is reinforcement learning?",
+    "answer": "Reinforcement learning is a type of machine learning where an agent learns by interacting with an environment and receiving rewards or penalties for its actions.",
+    "relevant_doc_ids": ["doc19"]
+  },
+  {
+    "question": "What is the purpose of model evaluation?",
+    "answer": "Model evaluation measures how well a machine learning model performs on unseen data using appropriate evaluation metrics.",
+    "relevant_doc_ids": ["doc20"]
+  }
+]

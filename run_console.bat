@@ -1,0 +1,1 @@
+python -m console.console_app
