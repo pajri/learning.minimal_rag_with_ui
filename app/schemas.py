@@ -15,8 +15,13 @@ class Document():
         self.id = id
         self.content = content
 
-class DocumentResult():
+class DocumentResult(Document):
     def __init__(self, id: str, content: str, distance: float):
-        self.id = id
-        self.content = content
+        super().__init__(id, content)
         self.distance = distance
+
+class DocumentEval():
+    def __init__(self, question: str, answer: str, relevant_doc_ids: list):
+        self.question = question
+        self.answer = answer
+        self.relevant_doc_ids = relevant_doc_ids

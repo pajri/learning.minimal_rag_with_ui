@@ -7,7 +7,7 @@ from app.schemas import DocumentResult
 
 logger = logging.getLogger()
 
-def rag_pipeline(question, collection):
+def rag_pipeline(collection, question):
     logger.info("start rag pipeline")
     results = retrieve(collection, question)
     doc_result = []
@@ -16,7 +16,7 @@ def rag_pipeline(question, collection):
         doc_result.append(_doc)
 
     doc_context, _, doc_found = filter(doc_result)
-    if not doc_found: return None
+    if not doc_found: return None, None
 
     prompt = build_system_prompt(doc_context) #TODO: consider passing question and add it into the prompt
     answer = get_response_from_llm(prompt, question)
