@@ -1,16 +1,29 @@
 import logging
 from .chunker import chunk_docs
-from .store import store_documents
 
 logger = logging.getLogger(__name__)
 
-def ingestion_pipeline(documents, collection):
+def chunk_ingestion_pipeline(vectorstore, doc_source):
     logger.info("starting ingestion pipeline")
 
-    docs = chunk_docs(documents)
+    chunked_docs = chunk_docs(doc_source)
+    print(f"doc_source size: {len(doc_source)}; chunked_docs size: {len(chunked_docs)}")
 
-    store_documents(collection, docs)
+    vectorstore.add_documents(chunked_docs, ids=[doc.metadata["chunk_id"] for doc in chunked_docs])
+    print(f"collection size: {vectorstore._collection.count()}")
 
     logger.info("done ingestion pipeline")
-    return docs
+    return chunked_docs
 
+
+def question_ingestion_pipeline(vectorstore, doc_question):
+    logger.info("starting question ingestion pipeline")
+
+    print(f"doc_question size: {len(doc_question)}")
+
+    vectorstore.add_documents(doc_question, ids=[doc.metadata["id"] for doc in doc_question])
+
+    print(f"collection size: {vectorstore._collection.count()}")
+
+    logger.info("done question ingestion pipeline")
+    return doc_question

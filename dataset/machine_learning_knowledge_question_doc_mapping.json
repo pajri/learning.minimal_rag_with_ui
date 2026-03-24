@@ -1,0 +1,62 @@
+[
+    {
+        "id": "q1",
+        "question": "What does machine learning mean and what is it used for?",
+        "docs": ["doc1","doc2","doc4","doc9"]
+    },
+    {
+        "id": "q2",
+        "question": "How would you define machine learning and its primary purpose?",
+        "docs": ["doc1","doc2","doc4","doc9"]
+    },
+    {
+        "id": "q3",
+        "question": "What is the role of machine learning in artificial intelligence?",
+        "docs": ["doc1","doc2","doc4","doc9"]
+    },
+    {
+        "id": "q4",
+        "question": "What are two popular methods used in unsupervised learning?",
+        "docs": ["doc3","doc15","doc3","doc10","doc5"]
+    },
+    {
+        "id": "q5",
+        "question": "Can you mention two common approaches in unsupervised machine learning?",
+        "docs": ["doc3","doc15","doc3","doc10","doc5"]
+    },
+    {
+        "id": "q6",
+        "question": "Which techniques are typically applied in unsupervised learning tasks?",
+        "docs": ["doc3","doc15","doc3","doc10","doc5"]
+    },
+    {
+        "id": "q7",
+        "question": "What are the standard ways to split a dataset in machine learning?",
+        "docs": ["doc4","doc16","doc9","doc10"]
+    },
+    {
+        "id": "q8",
+        "question": "Which three subsets are commonly used when preparing data for machine learning models?",
+        "docs": ["doc4","doc16","doc9","doc10"]
+    },
+    {
+        "id": "q9",
+        "question": "How is data usually partitioned before training and evaluating a machine learning model?",
+        "docs": ["doc4","doc16","doc9","doc10"]
+    },
+    {
+        "id": "q10",
+        "question": "How would you define hyperparameters in a machine learning model?",
+        "docs": ["doc17","doc1","doc2"]
+    },
+    {
+        "id": "q11",
+        "question": "What role do hyperparameters play in the training of machine learning models?",
+        "docs": ["doc17","doc1","doc2"]
+    },
+    {
+        "id": "q12",
+        "question": "What are examples of settings that influence model training but are not learned from the data?",
+        "docs": ["doc17","doc1","doc2"]
+    }
+]

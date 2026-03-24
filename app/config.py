@@ -1,4 +1,4 @@
-DISTANCE_THRESHOLD = 0.7
-LANGUAGE_MODEL = "hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF"
+DISTANCE_THRESHOLD = 0.5
+LANGUAGE_MODEL = "llama3.1:8b-instruct-q4_K_M"
 EVALUATION_MODEL = "gpt-4o-mini"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"

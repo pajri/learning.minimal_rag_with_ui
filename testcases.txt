@@ -1,0 +1,182 @@
+distance threshold = 0.7
+chunk size = 100
+chunk overlap = 50
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You are a helpful chatbot.
+    Use only the following pieces of context to answer the question.
+    If the answer is not contained, say you don't know.
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 0.7
+chunk size = 100
+chunk overlap = 50
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 1
+chunk size = 100
+chunk overlap = 50
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+
+    Answer:
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+
+    Answer:
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+chunk separator = ["\n\n", "\n", ". ", "? ", "! ", " "]
+model = qwen 0.5b
+embedding model = all-MiniLM-L6-v2
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+chunk separator = ["\n\n", "\n", ". ", "? ", "! ", " "]
+model = qwen 0.5b
+embedding model = BAAI/bge-small-en-v1.5
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+chunk separator = ["\n\n", "\n", ". ", "? ", "! ", " "]
+model = qwen 0.5b
+embedding model = BAAI/bge-small-en-v1.5
+add question answer chunk
+prompt =
+return f""""""
+    You must answer the question using ONLY the provided context.
+
+    Instructions:
+    - Extract the answer directly from the context
+    - Do NOT rephrase beyond what is necessary
+    - Do NOT include any information not present in the context
+    - If multiple items are listed in the context, return them exactly
+    - If the answer is not explicitly stated, respond with: I don't know
+
+    Context:
+    {context_lines}
+    """"""
+===================================
+distance threshold = 1
+chunk size = 200
+chunk overlap = 100
+chunk separator = ["\n\n", "\n", ". ", "? ", "! ", " "]
+model = qwen 0.5b
+embedding model = BAAI/bge-small-en-v1.5
+add question answer chunk
+prompt =
+return f"""
+    Answer using ONLY the context below.
+
+    Rules:
+    - Use ONLY the provided context to answer the question.
+    - If the answer cannot be found in the context, respond exactly with: I don't know
+    - Ensure the answer fully addresses the question using relevant details from the context
+    - Be concise, but include all necessary information for correctness
+    - Do not use outside knowledge
+    """
+===================================
