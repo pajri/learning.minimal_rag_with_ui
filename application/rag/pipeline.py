@@ -4,7 +4,10 @@ import json
 from langchain_core.documents import Document
 
 from .filters import filter
-from .llm import build_system_prompt, build_user_prompt, get_response_from_llm
+from ..llm.llm_ollama import get_response_from_llm
+from ..llm.prompt_builder import build_user_prompt, build_system_prompt
+from .query_expansion import expand_query
+from .reranking import rerank
 
 logger = logging.getLogger()
 
@@ -64,27 +67,46 @@ def ensure_unique_context(contexts):
 def rag_pipeline(vectorstore_chunk, vectorstore_question, question):
     logger.info("start rag pipeline")
 
-    context_result_question, _ = get_context_based_on_question_mapping(vectorstore_chunk, vectorstore_question, question)
-    # context_result_question = []
-    context_result = get_context_based_on_question(vectorstore_chunk, question)
+    print(f"question: {question}")
+    expanded_question = expand_query(question)
+    print(f"expanded_question: {expanded_question}")
+
+    # context_result_question, _ = get_context_based_on_question_mapping(vectorstore_chunk, vectorstore_question, question)
+    context_result_question = []
+
+    context_result = []
+    for q in expanded_question:
+        _context_result = get_context_based_on_question(vectorstore_chunk, q)
+        context_result.extend(_context_result)    
 
     logger.info(f"context_result_question: {context_result_question}")
     logger.info(f"context_result: {len(context_result)}")
+    print(f"context_result: {len(context_result)}")
 
     contexts = [
         *(context_result_question or []),
         *(context_result or [])
     ]
-    
+        
     contexts = ensure_unique_context(contexts)
-    if len(contexts) == 0: return None, None #doc not found
-
-    contexts = clean_filtered_context(contexts)
+    print(f"unique context len: {len(contexts)}")
 
     system_prompt = build_system_prompt()
+
+    if len(contexts) == 0: return None, None, system_prompt, None #doc not found
+
+    contexts = clean_filtered_context(contexts)
+    
+    print(f"before rerank: ")
+    print(contexts)
+    contexts = rerank(question, contexts)
+    print(f"after rerank: ")
+    print(contexts)
+    
     user_prompt = build_user_prompt(contexts, question)
 
     answer = get_response_from_llm(system_prompt, user_prompt)
+    # answer = get_response_from_llm_deepseek(system_prompt, user_prompt)
     logger.info("end rag pipeline")
 
     return answer, contexts, system_prompt, user_prompt

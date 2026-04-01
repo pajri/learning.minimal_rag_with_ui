@@ -1,4 +1,4 @@
-from app.config import DISTANCE_THRESHOLD
+from application.config import DISTANCE_THRESHOLD
 
 def filter(documents):
     approved_chunks = []

@@ -12,8 +12,15 @@ def setup_storage(embedding_function, collection_name):
 
     return vectorstore
 
+
 def setup_chunk_storage(embedding_function):
     return setup_storage(embedding_function, "rag_collection")
 
 def setup_question_storage(embedding_function):
     return setup_storage(embedding_function, "rag_question")
+
+def delete_all_docs(vectorstore):
+    all_docs = vectorstore.get() #
+    ids_to_delete = all_docs['ids']
+    if ids_to_delete:
+        vectorstore.delete(ids=ids_to_delete)

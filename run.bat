@@ -1,1 +1,1 @@
-uvicorn app.main:app
+uvicorn api.main:app --log-level info
