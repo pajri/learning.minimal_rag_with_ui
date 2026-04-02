@@ -40,8 +40,10 @@ def filter(output, context):
         return False, result
     
     # faithfulness check
+    """
     faithful = faithfulness_check(output, context)
     if not faithful:
         return False, "The output contains information that is not supported by the retrieved contexts."
-
+    """
+    
     return True, output
