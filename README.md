@@ -43,9 +43,9 @@ Application Layer (Business Logic)
 # Folder Structures
 The project is organized into three main areas:
 ```
-API Layer        → Handles requests
+API Layer         → Handles requests
 Application Layer → Core logic (RAG, LLM, ingestion)
-Supporting Tools → Storage, datasets, experiments
+Supporting Tools  → Storage, datasets, experiments
 ```
 
 ## 1. api/ — Entry Point (FastAPI Layer)
