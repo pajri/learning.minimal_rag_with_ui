@@ -1,187 +1,148 @@
 # RAG with API (FastAPI + ChromaDB + Ollama)
 
-This project implements a **simple Retrieval-Augmented Generation (RAG) system exposed through a REST API**.
+# Overview
 
-The goal of this project is to learn and practice the core building blocks of RAG:
-- document ingestion
-- embedding and vector storage
-- similarity-based retrieval
-- relevance filtering
-- LLM response generation
+This project is a Retrieval-Augmented Generation (RAG) API system built with FastAPI. It allows users to:
+- Ingest documents into a vector database
+- Query knowledge using LLMs (OpenAI, Ollama, DeepSeek)
+- Apply input/output filtering for safety
+- Perform retrieval, reranking, and response generation
 
-The implementation is intentionally minimal so each step of the pipeline is explicit and easy to follow.
+# Project Architecture
 
----
+This project follows a layered architecture, separating concerns between the API and core business logic.
 
-## Overview
-
-**High-level flow:**
-
-1. Documents are ingested through an API endpoint  
-2. Text is embedded using a sentence-transformer model  
-3. Embeddings are stored in a vector database (ChromaDB)  
-4. When a question is asked:
-   - relevant chunks are retrieved using vector similarity
-   - results are filtered using a distance threshold
-   - the remaining context is passed to an LLM
-5. The API returns an answer grounded only in retrieved context
-
----
-
-## Tech Stack
-
-- **API Framework**: FastAPI  
-- **Vector Database**: ChromaDB  
-- **Embeddings**: SentenceTransformers (`all-MiniLM-L6-v2`)  
-- **LLM Runtime**: Ollama  
-- **Language Model**: Llama-3.2-1B-Instruct (GGUF)  
-- **Language**: Python  
-
----
-
-## Project Structure
-
+## API Flow
 ```
-.
-|-- app.py                  # app file
-|-- cat-facts.txt           # the dataset
-|-- request_ask.json        # sample request for /ask
-|-- requests_ingest.json    # sample request for /ingest
-`-- README.md
+API Layer (FastAPI)
+        ↓
+Application Layer (Business Logic)
 ```
 
----
+- The API layer handles HTTP requests, validation, and responses.
+- The Application layer contains the core logic, including:
+  - Data ingestion
+  - Query processing (RAG pipeline)
+  - Filtering and validation
+  - LLM interactions
 
-## Setup
 
-### 1. Install dependencies
-
+## Experiment Flow
+For experimentation and research, the project uses Jupyter Notebooks, which directly interact with the application layer:
 ```
-pip install fastapi uvicorn chromadb sentence-transformers ollama
+Jupyter Notebook
+        ↓
+Application Layer (Business Logic)
 ```
+- This allows rapid testing and iteration without going through the API layer.
+- Useful for:
+  - Prototyping RAG pipelines
+  - Evaluating retrieval quality
+  - Testing prompts and LLM behavior
 
-### 2. Start Ollama
-
+# Folder Structures
+The project is organized into three main areas:
 ```
-ollama serve
-```
-
-Pull the model if it is not already available:
-
-```
-ollama pull hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF
-```
-
----
-
-## Running the API
-
-```
-uvicorn app:app --reload
-```
-
-Once running, the API will be available at:
-
-- Base URL: `http://localhost:8000`
-- OpenAPI docs: `http://localhost:8000/docs`
-
----
-
-## API Endpoints
-
-### 1. Ingest Documents
-
-**POST** `/ingest`
-
-**Sample request** (`requests_ingest.json`):
-
-```json
-{
-  "documents": [
-    "A cat can run at a top speed of approximately 31 mph.",
-    "A cat’s heart beats nearly twice as fast as a human heart."
-  ]
-}
+API Layer        → Handles requests
+Application Layer → Core logic (RAG, LLM, ingestion)
+Supporting Tools → Storage, datasets, experiments
 ```
 
-**Response:**
+## 1. api/ — Entry Point (FastAPI Layer)
 
-```json
-{
-  "status": "ok",
-  "num_documents": 2
-}
+This is where everything starts.
+- Receives incoming HTTP requests (/ask, /ingest)
+- Validates input using schemas
+- Calls the application layer
+- Returns standardized responses
+
+## 2. application/ — Core Logic (Brain of the System)
+
+This is the most important part of the project.
+It contains all business logic, split into focused modules:
+
+### Main responsibilities:
+- Filtering : Validate and sanitize input/output
+- Ingestion : Process documents → chunk → embed → store in DB
+- RAG Pipeline : Retrieve relevant data
+- Rerank results : Generate answers using LLM
+- LLM Integration : Supports multiple providers (OpenAI, Ollama, DeepSeek)
+
+## 3. dataset/ — Sample Data
+- Contains text/JSON files for ingestion and evaluation
+
+## 4. notebooks/ — Experimentation
+- Jupyter notebooks for:
+  - Testing RAG pipeline
+  - Evaluating results
+  - Prompt experimentation
+
+# End-to-End Flow
+## Ingestion Flow
+```
+dataset/ → API (/ingest) → application/ingestion → chroma_db/
 ```
 
-**Notes:**
-- Documents are lightly chunked before embedding
-- Each chunk is embedded and stored in ChromaDB
-
----
-
-### 2. Ask a Question
-
-**POST** `/ask`
-
-**Sample request** (`request_ask.json`):
-
-```json
-{
-  "question": "How fast can a cat run?",
-  "k": 3
-}
+## Query Flow
+```
+User → API (/ask)
+     → input filtering
+     → RAG pipeline (retrieve + rerank)
+     → LLM generation
+     → output filtering
+     → response
 ```
 
-**Sample response:**
+![ask_diagram](documentation/ask_diagram.jpg)
 
-```json
-{
-  "question": "How fast can a cat run?",
-  "results": "A cat can travel at a top speed of approximately 31 mph."
-}
+# Prerequisites
+
+Before running the project, make sure you have the following installed:
+
+## Required Tools
+- Python 3.10+
+- pip (Python package manager)
+
+## LLM Requirements
+- OpenAI: An OpenAI API Key
+- Ollama
+- DeepSeek (optional): Deepseek api key
+
+## Install Dependencies
+```
+pip install -r requirements.txt
+```
+* the requirements.txt is automatically generated using pipreqs. the package version might need adjustment
+
+# How to Run the Project
+
+## 1. Setup Environment Variables
+Rename `.env.example` to `.env` and insert your api key
+```
+DEEPSEEK_API_KEY=<your_deepseek_api_key_here>
+OPENAI_API_KEY=<your_openai_api_key_here>
 ```
 
-If no retrieved documents pass the relevance filter:
-
-```json
-{
-  "results": "I do not know the answer based the context you provided."
-}
+## 2. Start the FastAPI Server
+Use script to run the server
+```bash
+./run.bat
 ```
 
----
+or run manually 
+```bash
+uvicorn api.main:app
+```
 
-## Relevance Filtering
+## 3. Access API Documentation
+Once the server is running:
+```
+http://localhost:8000/docs
+```
+This opens the interactive Swagger UI. 
 
-After retrieval, results are filtered using a **distance threshold**:
+## 4. Perform Ingestion
+Execute `/ingest_file` api to use the existing dataset
 
-- Only documents with `distance <= DISTANCE_THRESHOLD` are used
-- This ensures the model only answers using sufficiently relevant context
-- If no documents pass the threshold, the system explicitly returns an unknown response
-
-This helps keep responses grounded and avoids unsupported answers.
-
----
-
-## Design Notes
-
-- The RAG pipeline is implemented without external frameworks
-- Each stage (embedding, retrieval, filtering, generation) is handled explicitly
-- The API boundary makes the system easy to test, debug, and extend
-
----
-
-## Possible Extensions
-
-- Persistent vector storage
-- Improved chunking strategy
-- Retrieval quality evaluation (e.g. precision@k)
-- Streaming LLM responses
-- Framework-based retrievers or chains (such as langchain)
-- Authentication and rate limiting
-
----
-
-## License
-
-For learning and experimentation purposes.
+## 5. Perform query
+Execute `/ask` api to submit your query and get response from the RAG system. Follow the format provided by Swagger for the request payload. You may check `dataset/machine_learning_knowledge_evaluation.json` for the example question. 
