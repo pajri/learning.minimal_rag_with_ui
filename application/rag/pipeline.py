@@ -1,70 +1,53 @@
 import logging
-import json
 
 from langchain_core.documents import Document
 
-from .filters import filter
-from ..llm.llm_ollama import get_response_from_llm
-from ..llm.prompt_builder import build_user_prompt, build_system_prompt
-from .query_expansion import expand_query
-from .reranking import rerank
+from application.rag.context_retrieval_step import ContextRetrievalStep
+from application.rag.query_expansion_step import QueryExpansionStep
+from application.rag.reranking_step import RerankingStep
+from application.rag.prompt_building_step import PromptBuildingStep
+from application.rag.llm_pipeline_step import LlmPipelineStep
+from application.rag.rag_pipeline_context import RagPipelineContext
 
-logger = logging.getLogger()
-
-def clean_filtered_context(contexts):
-    for c in contexts:
-        if c.page_content.startswith(". "):
-            c.page_content = c.page_content.lstrip(". ")
-
-    return contexts
-
-def get_context_based_on_question_mapping(vectorstore_chunk, vectorstore_question, question):
-    q_results = vectorstore_question.similarity_search_with_score(question, k=1)
-    q_results = [q for q in q_results if q[1] < 0.4]
-
-    doc_ids = []
-    for doc, _ in q_results:
-        doclist = json.loads(doc.metadata["docs"])
-        doc_ids.extend(doclist)
-    doc_ids = list(dict.fromkeys(doc_ids))
-
-    if (len(doc_ids) == 0): return None, None
-    
-    doc_query_result = vectorstore_chunk._collection.get(
-        where={"id": {"$in": doc_ids}}
-    )
-
-    if(doc_query_result is None): return None, None
-
-    doc_result = [
-        Document(page_content=doc, metadata=meta)
-        for doc, meta in zip(doc_query_result["documents"], doc_query_result["metadatas"])
-    ]
-
-    return doc_result, q_results
-
-def get_context_based_on_question(vectorstore_chunk, question):
-    contexts = vectorstore_chunk.similarity_search_with_score(question, k=3)
-    contexts = filter(contexts)
-
-    return contexts
-
-
-def ensure_unique_context(contexts):
-    seen = set()
-    unique_contexts = []
-
-    for doc in contexts:
-        content = doc.page_content.strip()
-        
-        if content not in seen:
-            seen.add(content)
-            unique_contexts.append(doc)
-
-    contexts = unique_contexts
-    return contexts
+logger = logging.getLogger(__name__)
 
 def rag_pipeline(vectorstore_chunk, vectorstore_question, question):
+    rag_context = RagPipelineContext()
+    rag_context.vectorstore_chunk = vectorstore_chunk
+    rag_context.vectorstore_question = vectorstore_question
+    rag_context.query = question
+
+    query_expansion_step = QueryExpansionStep()
+    context_retrieval_sep = ContextRetrievalStep()
+    reranking_step = RerankingStep()
+    prompt_building_step = PromptBuildingStep()
+    llm_pipeline_step = LlmPipelineStep()
+
+    query_expansion_step \
+        .set_next(context_retrieval_sep) \
+        .set_next(reranking_step) \
+        .set_next(prompt_building_step) \
+        .set_next(llm_pipeline_step)
+    
+    query_expansion_step.handle(rag_context)
+    
+    if rag_context.error_response is not None:
+        pipeline_name = rag_context.error_response.pipeline_name
+        error_message = rag_context.error_response.error_message
+        print(f"an error occured in pipeline {pipeline_name}. errpr: {error_message}")
+
+        # TODO return error message
+        return rag_context.answer, \
+            rag_context.documents, \
+            rag_context.system_prompt, \
+            rag_context.user_prompt 
+
+    return rag_context.answer, \
+            rag_context.documents, \
+            rag_context.system_prompt, \
+            rag_context.user_prompt 
+
+    """
     logger.info("start rag pipeline")
 
     print(f"question: {question}")
@@ -91,6 +74,7 @@ def rag_pipeline(vectorstore_chunk, vectorstore_question, question):
     contexts = ensure_unique_context(contexts)
     print(f"unique context len: {len(contexts)}")
 
+    # HERE
     system_prompt = build_system_prompt()
 
     if len(contexts) == 0: return None, None, system_prompt, None #doc not found
@@ -110,3 +94,4 @@ def rag_pipeline(vectorstore_chunk, vectorstore_question, question):
     logger.info("end rag pipeline")
 
     return answer, contexts, system_prompt, user_prompt
+    """

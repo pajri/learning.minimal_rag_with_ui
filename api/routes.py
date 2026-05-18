@@ -37,7 +37,6 @@ def ingest(req: IngestRequest):
         doc_source = [Document(metadata={"id": doc["id"]}, page_content=doc["text"]) for doc in json_docs]
         chunk_ingestion_pipeline(vectorstore_chunk, doc_source)
 
-
     if req.question is not None:
         json_question_doc_mapping = json.load(req.question)
         doc_question =[Document(metadata={"docs": json.dumps(doc["docs"]), "id":doc["id"]}, page_content=doc["question"]) for doc in json_question_doc_mapping]
