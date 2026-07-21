@@ -1,1 +1,2 @@
-from .app_state_util import get_vectorstore_chunk, get_vectorstore_question
+# Utility helpers have been replaced by api.dependencies (DI wiring).
+# This package is kept as a namespace placeholder.

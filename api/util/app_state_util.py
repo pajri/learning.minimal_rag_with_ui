@@ -1,7 +1,5 @@
-from fastapi import Request
-
-def get_vectorstore_chunk(request: Request):
-    return request.app.state.vectorstore_chunk
-
-def get_vectorstore_question(request: Request):
-    return request.app.state.vectorstore_question
+# This module is deprecated.
+# Vector stores are now provided via FastAPI DI — see api.dependencies.
+#
+# Kept as a stub so existing imports don't break immediately;
+# new code should use the Depends() factories.

@@ -1,187 +1,171 @@
+"""HTTP route handlers — thin controllers.
+
+All business logic is delegated to application services injected via
+FastAPI's dependency-injection system (see :mod:`api.dependencies`).
+"""
+
 import logging
-import json
-
-from api import constants
-from api.schemas import IngestRequest, AskRequest, ApiResponse, AskResponse, SourceDocumentResponse  
-from api.util import get_vectorstore_chunk, get_vectorstore_question
-
-from application.rag.pipeline import rag_pipeline
-from application.ingestion.pipeline import chunk_ingestion_pipeline, question_ingestion_pipeline
-from application.storage.setup import delete_all_docs
-from application.filtering import input_filtering, output_filtering
-from application.config import BASE_DIR
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from langchain_core.documents import Document
-
+from api import constants
+from api.dependencies import (
+    get_filtering_service,
+    get_ingestion_service,
+    get_rag_service,
+    get_vectorstore_chunk,
+    get_vectorstore_question,
+)
+from api.schemas import ApiResponse, AskRequest, AskResponse, IngestRequest, SourceDocumentResponse
+from application.dto.filtering_dto import FilterDecision
+from application.services.filtering_service import FilteringService
+from application.services.ingestion_service import IngestionService
+from application.services.rag_service import RagService
+from domain.ports.vector_store_port import VectorStorePort
 
 router = APIRouter()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
-# region ingestion
+
+# ---------------------------------------------------------------------------
+# Ingestion
+# ---------------------------------------------------------------------------
+
+
 @router.post("/ingest")
-def ingest(req: IngestRequest):
-    vectorstore_chunk = get_vectorstore_chunk(req)
-    vectorstore_question = get_vectorstore_question(req)
-    
-    delete_all_docs(vectorstore_chunk)
-    delete_all_docs(vectorstore_question)
-
-    doc_source = []
-    doc_question = []
-
-    if req.document is not None:
-        json_docs = json.load(req.document)
-        doc_source = [Document(metadata={"id": doc["id"]}, page_content=doc["text"]) for doc in json_docs]
-        chunk_ingestion_pipeline(vectorstore_chunk, doc_source)
-
-    if req.question is not None:
-        json_question_doc_mapping = json.load(req.question)
-        doc_question =[Document(metadata={"docs": json.dumps(doc["docs"]), "id":doc["id"]}, page_content=doc["question"]) for doc in json_question_doc_mapping]
-        question_ingestion_pipeline(vectorstore_question, doc_question)
-
-    api_response = ApiResponse(
+def ingest(
+    req: IngestRequest,
+    ingestion_service: IngestionService = Depends(get_ingestion_service),
+):
+    result = ingestion_service.ingest_from_json_payloads(
+        document_json=req.document,
+        question_json=req.question,
+    )
+    return ApiResponse(
         success=True,
         message=constants.INGESTION_COMPLETED_MESSAGE,
-        data={"num_documents": len(doc_source), "num_questions": len(doc_question)}
+        data={
+            "num_documents": result.num_documents,
+            "num_questions": result.num_questions,
+            "num_chunks": result.num_chunks,
+        },
     )
-    return api_response
+
 
 @router.post("/ingest_file")
-def ingest(vectorstore_chunk = Depends(get_vectorstore_chunk), vectorstore_question = Depends(get_vectorstore_question)):
-    # regresh collection
-    delete_all_docs(vectorstore_chunk)
-    delete_all_docs(vectorstore_question)
+def ingest_file(
+    ingestion_service: IngestionService = Depends(get_ingestion_service),
+):
+    from infrastructure.config import settings
 
-    # load files
-    with open(f"{BASE_DIR}/dataset/machine_learning_knowledge.json") as f:
-        json_docs = json.load(f)
-        print(f"docs: {json_docs[0]}")
+    docs_path = str(settings.base_dir / "dataset" / "machine_learning_knowledge.json")
+    questions_path = str(
+        settings.base_dir / "dataset" / "machine_learning_knowledge_question_doc_mapping.json"
+    )
 
-    with open(f"{BASE_DIR}/dataset/machine_learning_knowledge_question_doc_mapping.json") as f:
-        json_question_doc_mapping = json.load(f)
-        print(f"docs_question: {json_question_doc_mapping[0]}")
-
-    # populate documents
-    doc_source = [Document(metadata={"id": doc["id"]}, page_content=doc["text"]) for doc in json_docs]
-    doc_question = [Document(metadata={"docs": json.dumps(doc["docs"]), "id":doc["id"]}, page_content=doc["question"]) for doc in json_question_doc_mapping]
-
-    # process ingestion
-    question_ingestion_pipeline(vectorstore_question, doc_question)
-    chunk_ingestion_pipeline(vectorstore_chunk, doc_source)
-
-    # return result
-    api_response = ApiResponse(
+    result = ingestion_service.ingest_from_files(
+        docs_path=docs_path,
+        questions_path=questions_path,
+    )
+    return ApiResponse(
         success=True,
         message=constants.INGESTION_COMPLETED_MESSAGE,
-        data={"num_documents": len(doc_source), "num_questions": len(doc_question)}
+        data={
+            "num_documents": result.num_documents,
+            "num_questions": result.num_questions,
+            "num_chunks": result.num_chunks,
+        },
     )
-    return api_response
-# endregion
+
+
+# ---------------------------------------------------------------------------
+# Ask
+# ---------------------------------------------------------------------------
 
 
 @router.post("/ask")
-def ask(req: AskRequest, vectorstore_chunk = Depends(get_vectorstore_chunk), vectorstore_question = Depends(get_vectorstore_question)):
-    logger.info("start /ask")
-    logger.info(f"question: {req.question}")
+def ask(
+    req: AskRequest,
+    rag_service: RagService = Depends(get_rag_service),
+    filtering_service: FilteringService = Depends(get_filtering_service),
+):
+    logger.info("POST /ask — question: %s", req.question[:80])
 
-    response_api = None
+    # ---- input filtering ----------------------------------------------------
+    outcome = filtering_service.check_input(req.question)
 
-    """
-    TODO: i think we can try to separate between input filtering and input validation.
-    input filtering is to filter unsafe content (e.g. self-harm, kill, bomb, etc.).
-        when input filtering failed, we can still return 200 with a safe answer 
-        (e.g. for self-harm, we can return a message to seek help from trusted people or mental health professionals). 
+    if outcome.decision == FilterDecision.SAFE_RESPONSE:
+        logger.info("Input triggered safe response for: %s", outcome.reason)
+        return ApiResponse(
+            success=True,
+            message=constants.ANSWER_GENERATED_MESSAGE,
+            data=AskResponse(
+                question=req.question,
+                answer=outcome.safe_message,
+                source_documents=[],
+            ),
+        )
 
-    input validation is to filter input that is harmful to the system (e.g. prompt injection, sql injection, etc.). 
-        this also includes validating the format of the input (e.g. maxlength).
-        when input validation failed, we can return 400 with an error message.
-    """
-    valid, result = input_filtering.filter(req.question)
-    logger.info(f"after input filtering, valid: {valid}, result: {result}")
+    if outcome.decision == FilterDecision.REJECT:
+        logger.info("Input rejected: %s", outcome.reason)
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiResponse(
+                success=False,
+                message=constants.INVALID_INPUT_MESSAGE,
+                data=None,
+                error=outcome.reason,
+            ).model_dump(),
+        )
 
-    if not valid:
-        print('invalid input detected')
-        logger.info("done /ask. input not valid")
+    # ---- RAG pipeline -------------------------------------------------------
+    logger.info("Input valid, running RAG pipeline …")
+    question = outcome.filtered_text
+    rag_result = rag_service.ask(question)
 
-        
-        if "self-harm" in result.lower():
-            response_api = ApiResponse(
-                success=True,
-                message=constants.ANSWER_GENERATED_MESSAGE,
-                data=AskResponse(
-                    question=req.question,
-                    answer=constants.SELF_HARM_ANSWER,
-                    source_documents=[]
-                )
-            )
-        else:
-            response_api = JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=ApiResponse(
-                    success=False,
-                    message=constants.INVALID_INPUT_MESSAGE,
-                    data=None,
-                    error = result
-                ).model_dump()
-            )
-    
-        return response_api
-    
-    print('input valid, proceed to rag pipeline')
-    question = result
-    answer, contexts, system_prompt, user_prompt = rag_pipeline(vectorstore_chunk, vectorstore_question, question)
+    logger.info("RAG pipeline finished. answer=%s", rag_result.answer[:80])
 
-    logger.info(f"rag_pipeline finished")
-    logger.info(f"answer: {answer}")
-    logger.info(f"retrieved contexts: {contexts}")
-    logger.info(f"system_prompt: {system_prompt}")
-    logger.info(f"user_prompt: {user_prompt}")
-
-    if answer is None:
-        logger.info("done /ask. no answer provided")
-        response_api = ApiResponse(
+    if not rag_result.has_answer:
+        return ApiResponse(
             success=True,
             message=constants.ANSWER_GENERATED_MESSAGE,
             data=AskResponse(
                 question=req.question,
                 answer="I do not know the answer based on the provided context.",
-                source_documents=[]
-            )
+                source_documents=[],
+            ),
         )
-        return response_api
-    
 
-    valid, result = output_filtering.filter(answer, contexts)
-    if not valid:
-        print('output not valid')
-        logger.info("done /ask. output not valid")
-
-        api_response = ApiResponse(
+    # ---- output filtering ---------------------------------------------------
+    output_outcome = filtering_service.check_output(
+        rag_result.answer, rag_result.source_documents
+    )
+    if not output_outcome.valid:
+        logger.info("Output rejected: %s", output_outcome.reason)
+        return ApiResponse(
             success=True,
-            message=f"constants.OUTPUT_FILTERING_FAILED_MESSAGE {result}",
+            message=f"{constants.OUTPUT_FILTERING_FAILED_MESSAGE} {output_outcome.reason}",
             data=AskResponse(
                 question=req.question,
                 answer=constants.OUTPUT_FILTERING_FAILED_ANSWER,
-                source_documents=[]
-            )
+                source_documents=[],
+            ),
+        )
 
-        )   
-
-        return api_response
-    
-    logger.info("done /ask")
-
-    
-    source_documents = [SourceDocumentResponse(page_content=doc.page_content, metadata=doc.metadata) for doc in contexts]
-    data = AskResponse(question=req.question, answer=answer, source_documents=source_documents)
-    response_api = ApiResponse(
+    # ---- success ------------------------------------------------------------
+    source_docs = [
+        SourceDocumentResponse(
+            page_content=doc.page_content, metadata=doc.metadata
+        )
+        for doc in rag_result.source_documents
+    ]
+    return ApiResponse(
         success=True,
         message=constants.ANSWER_GENERATED_MESSAGE,
-        data=data
+        data=AskResponse(
+            question=req.question,
+            answer=rag_result.answer,
+            source_documents=source_docs,
+        ),
     )
-
-    return response_api
-    

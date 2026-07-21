@@ -1,14 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel
 
-class DocumentRequest(BaseModel):
-    id: str
-    text: str
 
-class QuestionRequest(BaseModel):
-    id: str
-    question: str
-    docs: list[str]
-    
 class IngestRequest(BaseModel):
-    document: DocumentRequest
-    question: QuestionRequest
+    """Payload for ``POST /ingest`` — JSON strings or file uploads."""
+
+    document: Optional[str] = None  # JSON string of document list
+    question: Optional[str] = None  # JSON string of question→doc mapping
